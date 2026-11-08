@@ -5,10 +5,12 @@
 """
 
 import json
+import random
 from functools import cache
 from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+LEARNING_LOG_DIR = DATA_DIR.parent / "learning_log"
 MAX_RESULTS = 3
 
 
@@ -77,3 +79,46 @@ def get_lecture_summary(lecture: int) -> str:
         available = sorted(p.stem for p in (DATA_DIR / "lectures").glob("*.md"))
         return f"第{lecture}回の要点はまだありません。用意されている回: {', '.join(available)}"
     return path.read_text(encoding="utf-8")
+
+
+def make_quiz(lecture: int) -> str:
+    """指定した回の用語から 1つを選び、 確認問題と答えを返す。
+    「第2回の確認問題を出して」のように、 復習用の問題を求められたときに使う。
+    """
+    #1. load_glossary() から lecture が一致する用語を集める
+    #2. 1 つ選ぶ(random.choice)
+    #3. 問題と答えを文字列で返す(json.dumps など)
+
+    terms = [entry for entry in load_glossary() if entry["lecture"] == lecture]
+    if not terms:
+        return json.dumps(
+            {"error": f"第{lecture}回の用語が見つかりませんでした。"},
+            ensure_ascii=False,
+        )
+
+    term = random.choice(terms)
+    return json.dumps(
+        {
+            "question": f"「{term['term']}」の意味は?",
+            "answer": term["definition"],
+        },
+        ensure_ascii=False,
+    )
+
+
+def save_learning_log(content: str) -> str:
+    """学習記録を learning_log/ に追記する。
+
+    利用者が学んだことや振り返りを保存したいときに使う。
+    保存前に利用者の承認が必要。
+    """
+    if not content.strip():
+        return "学習記録が空のため、保存しませんでした。"
+
+    LEARNING_LOG_DIR.mkdir(parents=True, exist_ok=True)
+    log_path = LEARNING_LOG_DIR / "learning_log.md"
+    with log_path.open("a", encoding="utf-8") as f:
+        f.write(f"- {content.strip()}\n")
+    return "学習記録を保存しました。"
+
+
