@@ -56,6 +56,7 @@ class CriterionVerdict(BaseModel):
 
     reason: str = Field(description="判定の理由。日本語で 1〜2 文")
     verdict: Verdict = Field(description="pass / fail / unsure のどれか")
+#    reason: str = Field(description="判定の理由。日本語で 1〜2 文")
 
 
 class JudgeResult(BaseModel):
