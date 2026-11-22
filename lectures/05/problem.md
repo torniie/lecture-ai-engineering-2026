@@ -176,6 +176,19 @@ APIキーや実験用の検索DBはcommitの対象から外してください。
 
 ### 発展の進め方
 
+```bash
+AIE_QUESTION='第2回の説明では、LoRAは何を固定し何を学習しますか？ QLoRAは何を加えますか？'
+AIE_QUESTION='コンパクションとセッションをまたぐメモリはどう違いますか。日々のメモはすべて長期メモリに入りますか？'
+AIE_QUESTION='今回作ったRAGの実測平均応答時間と正答率を教えてください'
+AIE_QUESTION='第1回から第3回までの講義の重要な論点を教えてください'
+
+AIE_QUESTION='コンパクションとセッションをまたぐメモリはどう違いますか。日々のメモはすべて長期メモリに入りますか？'
+uv run python -m app.agent --full-context --trace "$AIE_QUESTION"
+uv run python -m app.agent --trace "$AIE_QUESTION"
+uv run python -m app.agent --tree --trace "$AIE_QUESTION"
+uv run python -m app.agent --graph --trace "$AIE_QUESTION"
+```
+
 1. 解けるようにしたい質問を決めます。章をまたぐ説明や関連用語の比較など、答えを支えるページを先に確認します
 2. 取得方法を設計します。例として、Treeの目次・候補文の返し方、Graphの関係の種類・hop数・候補の選び方、複数の取得方法の組合せがあります
 3. データの形・持ち方・検索方法を、選んだ理由と一緒に説明します
